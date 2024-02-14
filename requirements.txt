@@ -1,2 +1,9 @@
-matplotlib
+sqlite3
 pandas
+plotly
+datetime
+io
+emosent
+vk_api
+torch
+transformers
