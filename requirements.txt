@@ -5,3 +5,4 @@ emosent-py
 vk_api
 torch
 transformers
+safetensors
