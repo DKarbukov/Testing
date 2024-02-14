@@ -7,6 +7,7 @@ import sqlite3
 import torch
 from transformers import AutoModelForSequenceClassification
 from transformers import BertTokenizerFast
+print(f'Поменял')
 login = vk_api.VkApi(token=MY_TOKEN)
 ostin_id = -20367999
 MY_TOKEN = st.secrets["MY_TOKEN"]
