@@ -1,7 +1,7 @@
 pandas
 plotly
 datetime
-emosent
+emosent-py
 vk_api
 torch
 transformers
