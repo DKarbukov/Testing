@@ -1,4 +1,3 @@
-from APIVK_private import MY_TOKEN
 from emosent import get_emoji_sentiment_rank_multiple
 import vk_api
 import datetime
