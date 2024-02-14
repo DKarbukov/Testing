@@ -71,6 +71,7 @@ def get_comments(group_id, posts):  #Gets comments, gets answers to these commen
                                                                 'Лайки': '',
                                                                 'Ответы': '',
                                                                 'Дата': ''}
+    print('Starting sentiment ranking')
     for key, comment in clean_comments.items():
         text = comment['Комментарий']
         if get_emoji_sentiment_rank_multiple(text) == []:
