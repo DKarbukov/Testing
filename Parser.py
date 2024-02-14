@@ -10,7 +10,7 @@ from transformers import BertTokenizerFast
 login = vk_api.VkApi(token=MY_TOKEN)
 ostin_id = -20367999
 MY_TOKEN = st.secrets["MY_TOKEN"]
-
+print(f'Мой токен: {MY_TOKEN}')
 def get_group_posts(group_id, count):   #Collects posts and separates the ones without comments
     offset = 0
     posts_with_comments, all_posts = {}, {}
