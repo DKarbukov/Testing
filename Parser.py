@@ -1,3 +1,4 @@
+import streamlit as st
 from emosent import get_emoji_sentiment_rank_multiple
 import vk_api
 import datetime
@@ -8,7 +9,7 @@ from transformers import AutoModelForSequenceClassification
 from transformers import BertTokenizerFast
 login = vk_api.VkApi(token=MY_TOKEN)
 ostin_id = -20367999
-
+MY_TOKEN = st.secrets["MY_TOKEN"]
 
 def get_group_posts(group_id, count):   #Collects posts and separates the ones without comments
     offset = 0
@@ -229,7 +230,7 @@ def add_update():
     conn.close()
 
 
-posts, posts_with_comments = get_group_posts(ostin_id, 250)
+posts, posts_with_comments = get_group_posts(ostin_id, 50)
 comments, users = get_comments(ostin_id, posts_with_comments)
 # posts.update(posts_with_comments_ranked)
 export_to_db(posts, 'Posts')
