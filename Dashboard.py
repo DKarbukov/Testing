@@ -15,7 +15,7 @@ start_date_str = start_date.strftime('%Y/%m/%d')
 end_date_str = end_date.strftime('%Y/%m/%d')
 
 # Содержимое страницы "Главная"
-def main():
+def main(start_date_tab_str, end_date_tab_str):
     st.title("Главная страница")
     st.write("Привет! Это главная страница.")
     conn = sqlite3.connect('test.db')
@@ -43,20 +43,20 @@ def main():
         sex_filter = st.multiselect("Фильтр по полу", tables[selected_table]['Sex'].unique(), default=[])
         # post_filter_value = st.text_area("Поиск всех комментариев к определенным постам (столбец 'Пост')")
        
-        date_type = st.radio("Выберите тип фильтрации по дате", ["Диапазон дат", "Конкретная дата", 'Все'], index=2)
-        if date_type == "Диапазон дат":
-            start_date_tab = st.date_input("Выберите начальную дату", datetime.now() - timedelta(days=7), key='start_date_tab')
-            end_date_tab = st.date_input("Выберите конечную дату", datetime.now(),key='end_date_tab')
-            start_date_tab_str = start_date_tab.strftime('%Y/%m/%d')
-            end_date_tab_str = end_date_tab.strftime('%Y/%m/%d')
-            filtered_data = tables[selected_table][(tables[selected_table]['Дата'] >= start_date_tab_str) & (tables[selected_table]['Дата'] <= end_date_tab_str)]
-        elif date_type == "Конкретная дата":
-            selected_date = st.date_input("Выберите конкретную дату", datetime.now())
-            selected_date_str = selected_date.strftime('%Y/%m/%d')
-            filtered_data = tables[selected_table][tables[selected_table]['Дата'] == selected_date_str]
-        else: 
-            filtered_data = tables[selected_table]
-        
+        # date_type = st.radio("Выберите тип фильтрации по дате", ["Диапазон дат", "Конкретная дата", 'Все'], index=2)
+        # if date_type == "Диапазон дат":
+        #     start_date_tab = st.date_input("Выберите начальную дату", datetime.now() - timedelta(days=7), key='start_date_tab')
+        #     end_date_tab = st.date_input("Выберите конечную дату", datetime.now(),key='end_date_tab')
+        #     start_date_tab_str = start_date_tab.strftime('%Y/%m/%d')
+        #     end_date_tab_str = end_date_tab.strftime('%Y/%m/%d')
+        #     filtered_data = tables[selected_table][(tables[selected_table]['Дата'] >= start_date_tab_str) & (tables[selected_table]['Дата'] <= end_date_tab_str)]
+        # elif date_type == "Конкретная дата":
+        #     selected_date = st.date_input("Выберите конкретную дату", datetime.now())
+        #     selected_date_str = selected_date.strftime('%Y/%m/%d')
+        #     filtered_data = tables[selected_table][tables[selected_table]['Дата'] == selected_date_str]
+        # else: 
+        #     filtered_data = tables[selected_table]
+        filtered_data = tables[selected_table][(tables[selected_table]['Дата'] >= start_date_tab_str) & (tables[selected_table]['Дата'] <= end_date_tab_str)]
 
         if sentiment_filter:
             filtered_data = filtered_data[filtered_data['Sentiment'].isin(sentiment_filter)]
@@ -114,27 +114,27 @@ def main():
     if selected_table == "Посты":
         # Добавляем фильтр по значению столбца "Sentiment"
         sentiment_filter = st.multiselect("Фильтр по тональности", tables[selected_table]['Sentiment'].unique(), default=[])
-        date_type = st.radio("Выберите тип фильтрации по дате", ["Диапазон дат", "Конкретная дата", 'Все'], index=2)
-        if date_type == "Диапазон дат":
-            start_date_tab = st.date_input("Выберите начальную дату", datetime.now() - timedelta(days=7), key='start_date_tab1')
-            end_date_tab = st.date_input("Выберите конечную дату", datetime.now(),key='end_date_tab1')
-            start_date_tab_str = start_date_tab.strftime('%Y/%m/%d')
-            end_date_tab_str = end_date_tab.strftime('%Y/%m/%d')
-            filtered_data = tables[selected_table][(tables[selected_table]['Дата'] >= start_date_tab_str) & (tables[selected_table]['Дата'] <= end_date_tab_str)]
-        elif date_type == "Конкретная дата":
-            selected_date = st.date_input("Выберите конкретную дату", datetime.now())
-            selected_date_str = selected_date.strftime('%Y/%m/%d')
-            filtered_data = tables[selected_table][tables[selected_table]['Дата'] == selected_date_str]
-        else: 
-            filtered_data = tables[selected_table]
-        
+        # date_type = st.radio("Выберите тип фильтрации по дате", ["Диапазон дат", "Конкретная дата", 'Все'], index=2)
+        # if date_type == "Диапазон дат":
+        #     start_date_tab = st.date_input("Выберите начальную дату", datetime.now() - timedelta(days=7), key='start_date_tab1')
+        #     end_date_tab = st.date_input("Выберите конечную дату", datetime.now(),key='end_date_tab1')
+        #     start_date_tab_str = start_date_tab.strftime('%Y/%m/%d')
+        #     end_date_tab_str = end_date_tab.strftime('%Y/%m/%d')
+        #     filtered_data = tables[selected_table][(tables[selected_table]['Дата'] >= start_date_tab_str) & (tables[selected_table]['Дата'] <= end_date_tab_str)]
+        # elif date_type == "Конкретная дата":
+        #     selected_date = st.date_input("Выберите конкретную дату", datetime.now())
+        #     selected_date_str = selected_date.strftime('%Y/%m/%d')
+        #     filtered_data = tables[selected_table][tables[selected_table]['Дата'] == selected_date_str]
+        # else: 
+        #     filtered_data = tables[selected_table]
+        filtered_data = tables[selected_table][(tables[selected_table]['Date'] >= start_date_tab_str) & (tables[selected_table]['Date'] <= end_date_tab_str)]
     
         
         if sentiment_filter:
-            filtered_data = tables[selected_table][tables[selected_table]['Sentiment'].isin(sentiment_filter)]
+            filtered_data = filtered_data[filtered_data['Sentiment'].isin(sentiment_filter)]
         else:
             # Если нет фильтра, отображаем все строки
-            filtered_data = tables[selected_table]
+            filtered_data = tables[selected_table][(tables[selected_table]['Date'] >= start_date_tab_str) & (tables[selected_table]['Date'] <= end_date_tab_str)]
          # Сбрасываем индекс и устанавливаем начальное значение в 1
         filtered_data = filtered_data.reset_index(drop=True)
         
@@ -422,7 +422,7 @@ def tops():
 
 # Опции для навигации между страницами
 pages = {
-    "Главная": main,
+    "Главная": main(start_date_str, end_date_str),
     "Анализ статистики": statistics,
     'Топ': tops,
     # 'Анализ аудитории': audience
