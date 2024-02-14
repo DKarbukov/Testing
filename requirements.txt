@@ -1,7 +1,6 @@
 pandas
 plotly
 datetime
-io
 emosent
 vk_api
 torch
