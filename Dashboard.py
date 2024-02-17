@@ -1,10 +1,11 @@
 import streamlit as st
+from geopy.geocoders import Nominatim
 import sqlite3
 import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta   
 from io import BytesIO
-
+geolocator = Nominatim(user_agent="MyApp")
 end_date_default = datetime.now().date()
 start_date_default = end_date_default - timedelta(days=7)
 
@@ -15,21 +16,18 @@ start_date_str = start_date.strftime('%Y/%m/%d')
 end_date_str = end_date.strftime('%Y/%m/%d')
 
 # Содержимое страницы "Главная"
-def main(start_date_tab_str, end_date_tab_str):
+def main():
     st.title("Главная страница")
     st.write("Привет! Это главная страница.")
     conn = sqlite3.connect('test.db')
-   
     
     tables = {
         'Комментарии': pd.read_sql_query("SELECT * FROM Comments WHERE Пользователь != '-20367999';", conn),
         'Посты': pd.read_sql_query("SELECT CAST(ID AS TEXT),* FROM Posts;", conn),
         'Комментаторы': pd.read_sql_query("SELECT * FROM Users;", conn),
     }
-
     # Выбор таблицы для отображения с помощью selectbox
     selected_table = st.selectbox("Выберите таблицу", list(tables.keys()))
-
     if selected_table == 'Комментарии':
         # post_filter_value = st.text_input("Введите ID постов (разделите их запятой)", key='post_ids_input')
         # post_ids = [int(post_id.strip()) for post_id in post_ids_input.split(', ') if post_id.strip()] if post_ids_input else []
@@ -37,10 +35,10 @@ def main(start_date_tab_str, end_date_tab_str):
         # if post_ids:
         #     query_comments = f"SELECT Пост, Sentiment FROM Comments WHERE Пост IN ({', '.join(map(str, post_ids))})"
         #     filtered_data = pd.read_sql_query(query_comments, conn)
-        sentiment_filter = st.multiselect("Фильтр по тональности", tables[selected_table]['Sentiment'].unique(), default=[])
-        country_filter = st.multiselect("Фильтр по стране", tables[selected_table]['Country'].unique(), default=[])
-        city_filter = st.multiselect("Фильтр по городу", tables[selected_table]['City'].unique(), default=[])
-        sex_filter = st.multiselect("Фильтр по полу", tables[selected_table]['Sex'].unique(), default=[])
+        sentiment_filter = st.sidebar.multiselect("Фильтр по тональности", tables[selected_table]['Sentiment'].unique(), default=[])
+        country_filter = st.sidebar.multiselect("Фильтр по стране", tables[selected_table]['Country'].unique(), default=[])
+        city_filter = st.sidebar.multiselect("Фильтр по городу", tables[selected_table]['City'].unique(), default=[])
+        sex_filter = st.sidebar.multiselect("Фильтр по полу", tables[selected_table]['Sex'].unique(), default=[])
         # post_filter_value = st.text_area("Поиск всех комментариев к определенным постам (столбец 'Пост')")
        
         # date_type = st.radio("Выберите тип фильтрации по дате", ["Диапазон дат", "Конкретная дата", 'Все'], index=2)
@@ -56,7 +54,7 @@ def main(start_date_tab_str, end_date_tab_str):
         #     filtered_data = tables[selected_table][tables[selected_table]['Дата'] == selected_date_str]
         # else: 
         #     filtered_data = tables[selected_table]
-        filtered_data = tables[selected_table][(tables[selected_table]['Дата'] >= start_date_tab_str) & (tables[selected_table]['Дата'] <= end_date_tab_str)]
+        filtered_data = tables[selected_table][(tables[selected_table]['Дата'] >= start_date_str) & (tables[selected_table]['Дата'] <= end_date_str)]
 
         if sentiment_filter:
             filtered_data = filtered_data[filtered_data['Sentiment'].isin(sentiment_filter)]
@@ -113,7 +111,7 @@ def main(start_date_tab_str, end_date_tab_str):
 
     if selected_table == "Посты":
         # Добавляем фильтр по значению столбца "Sentiment"
-        sentiment_filter = st.multiselect("Фильтр по тональности", tables[selected_table]['Sentiment'].unique(), default=[])
+        sentiment_filter = st.sidebar.multiselect("Фильтр по тональности", tables[selected_table]['Sentiment'].unique(), default=[])
         # date_type = st.radio("Выберите тип фильтрации по дате", ["Диапазон дат", "Конкретная дата", 'Все'], index=2)
         # if date_type == "Диапазон дат":
         #     start_date_tab = st.date_input("Выберите начальную дату", datetime.now() - timedelta(days=7), key='start_date_tab1')
@@ -127,14 +125,14 @@ def main(start_date_tab_str, end_date_tab_str):
         #     filtered_data = tables[selected_table][tables[selected_table]['Дата'] == selected_date_str]
         # else: 
         #     filtered_data = tables[selected_table]
-        filtered_data = tables[selected_table][(tables[selected_table]['Date'] >= start_date_tab_str) & (tables[selected_table]['Date'] <= end_date_tab_str)]
+        filtered_data = tables[selected_table][(tables[selected_table]['Date'] >= start_date_str) & (tables[selected_table]['Date'] <= end_date_str)]
     
         
         if sentiment_filter:
             filtered_data = filtered_data[filtered_data['Sentiment'].isin(sentiment_filter)]
         else:
             # Если нет фильтра, отображаем все строки
-            filtered_data = tables[selected_table][(tables[selected_table]['Date'] >= start_date_tab_str) & (tables[selected_table]['Date'] <= end_date_tab_str)]
+            filtered_data = tables[selected_table][(tables[selected_table]['Date'] >= start_date_str) & (tables[selected_table]['Date'] <= end_date_str)]
          # Сбрасываем индекс и устанавливаем начальное значение в 1
         filtered_data = filtered_data.reset_index(drop=True)
         
@@ -163,12 +161,36 @@ def main(start_date_tab_str, end_date_tab_str):
             st.write("Нет данных для отображения.")
     
     if selected_table == 'Комментаторы':
-        country_filter = st.multiselect("Фильтр по стране", tables[selected_table]['Country'].unique(), default=[],key = 'user_country')
-        city_filter = st.multiselect("Фильтр по городу", tables[selected_table]['City'].unique(), default=[],key = 'user_city')
-        sex_filter = st.multiselect("Фильтр по полу", tables[selected_table]['Sex'].unique(), default=[],key = 'user_sex')
-        
+        country_filter = st.sidebar.multiselect("Фильтр по стране", tables[selected_table]['Country'].unique(), default=[],key = 'user_country')
+        city_filter = st.sidebar.multiselect("Фильтр по городу", tables[selected_table]['City'].unique(), default=[],key = 'user_city')
+        sex_filter = st.sidebar.multiselect("Фильтр по полу", tables[selected_table]['Sex'].unique(), default=[],key = 'user_sex')
+        if st.button('Показать карту'):
+            st.write('Карта загружается...')
+            cities = tables[selected_table]['City'].unique()
+            conn2 = sqlite3.connect('Coordinates.db')
+            exist_cities = pd.read_sql_query("SELECT * FROM Cities;", conn2)
+            only_names = exist_cities['Город'].values.tolist()
+            cities_coord = {'lat':[], 'lon': [], 'Город': []}
+            # print(only_names)
+            for i in cities:
+                if i not in only_names and i != None:
+                    # print(i)
+                    coord = geolocator.geocode(i)
+                    if coord is not None:
+                        cities_coord['lat'].append(coord.latitude)
+                        cities_coord['lon'].append(coord.longitude)
+                        cities_coord['Город'].append(i)
+                elif i in only_names and i != None:
+                    # print(f'{i} exists')
+                    cities_coord['lat'].append(exist_cities[exist_cities['Город']==i]['lat'].values[0])
+                    cities_coord['lon'].append(exist_cities[exist_cities['Город']==i]['lon'].values[0])
+                    cities_coord['Город'].append(i)
+            final_coord = pd.DataFrame(cities_coord)
+            # print(cities_coord)
+            final_coord.to_sql('Cities', conn2, if_exists='append', index=False)
+            st.write('Карта готова!')
+            st.map(final_coord)
 
-        
         
         filtered_data = tables[selected_table]
 
@@ -422,7 +444,7 @@ def tops():
 
 # Опции для навигации между страницами
 pages = {
-    "Главная": main(start_date_str, end_date_str),
+    "Главная": main,
     "Анализ статистики": statistics,
     'Топ': tops,
     # 'Анализ аудитории': audience
